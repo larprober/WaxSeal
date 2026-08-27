@@ -1,4 +1,13 @@
-# Waxseal
+<p align="center">
+  <img src="assets/banner.png" alt="Waxseal" width="100%">
+</p>
+
+<p align="center">
+  <img alt="Version" src="https://img.shields.io/badge/version-1.0.0-c8323c">
+  <img alt="License" src="https://img.shields.io/badge/license-MIT-b02734">
+  <img alt="Platform" src="https://img.shields.io/badge/platform-Windows-5e111c">
+  <img alt="Runtime dependencies" src="https://img.shields.io/badge/runtime%20deps-0-6fae7a">
+</p>
 
 A note whose name is public and whose contents are not.
 

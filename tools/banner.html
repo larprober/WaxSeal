@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1600px; height: 500px; overflow: hidden; }
+  body {
+    display: flex;
+    align-items: center;
+    gap: 74px;
+    padding: 0 100px;
+    background: linear-gradient(135deg, #1a0d0e 0%, #120a0b 55%, #0d0708 100%);
+    font-family: "Iowan Old Style", Georgia, "Times New Roman", serif;
+  }
+  /* a plain corner vignette for depth — no coloured light anywhere */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(130% 130% at 50% 45%, transparent 62%, rgba(0, 0, 0, 0.5));
+    pointer-events: none;
+  }
+
+  .mark {
+    flex: none;
+    width: 400px;
+    height: 400px;
+    filter: drop-shadow(0 12px 22px rgba(0, 0, 0, 0.5));
+  }
+  .mark svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+  .text { position: relative; z-index: 1; }
+  .word {
+    font-size: 152px;
+    font-weight: 700;
+    line-height: 0.92;
+    letter-spacing: 0.01em;
+    color: #dc4c56;
+  }
+  .tag {
+    margin-top: 26px;
+    max-width: 730px;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    font-size: 28px;
+    line-height: 1.5;
+    color: #e7c9c2;
+  }
+  .tag b { color: #f6ded7; font-weight: 600; }
+  .chips {
+    display: flex;
+    gap: 12px;
+    margin-top: 34px;
+    font-family: "Cascadia Mono", Consolas, monospace;
+    font-size: 16px;
+  }
+  .chip {
+    padding: 8px 17px;
+    border-radius: 999px;
+    border: 1px solid rgba(226, 120, 128, 0.32);
+    background: rgba(200, 50, 60, 0.1);
+    color: #f0a9ad;
+    letter-spacing: 0.02em;
+  }
+</style>
+</head>
+<body>
+  <div class="mark" id="mark"></div>
+  <div class="text">
+    <div class="word">Waxseal</div>
+    <div class="tag">Sealed <b>.txt</b> notes. The name is public; the secrets need a password &mdash;
+      and every attempt to open one is caught inside the file.</div>
+    <div class="chips">
+      <span class="chip">AES-256-GCM</span>
+      <span class="chip">X25519 tripwire</span>
+      <span class="chip">photo on every try</span>
+    </div>
+  </div>
+
+<script>
+  // The same wax geometry the app draws, so the banner mark is the real logo.
+  function mulberry32(seed) {
+    let a = seed >>> 0;
+    return function () {
+      a = (a + 0x6d2b79f5) >>> 0;
+      let t = a;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function blob(cx, cy, r, count, wobble, seed) {
+    const rand = mulberry32(seed);
+    const pts = [];
+    for (let i = 0; i < count; i++) {
+      const a = (i / count) * Math.PI * 2;
+      const rr = r * (1 - wobble / 2 + rand() * wobble);
+      pts.push([cx + Math.cos(a) * rr, cy + Math.sin(a) * rr]);
+    }
+    const at = (i) => pts[(i + pts.length) % pts.length];
+    let d = 'M' + at(0)[0].toFixed(2) + ' ' + at(0)[1].toFixed(2);
+    for (let i = 0; i < pts.length; i++) {
+      const p0 = at(i - 1), p1 = at(i), p2 = at(i + 1), p3 = at(i + 2);
+      const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+      const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+      d += 'C' + c1[0].toFixed(2) + ' ' + c1[1].toFixed(2) + ',' + c2[0].toFixed(2) + ' ' + c2[1].toFixed(2) +
+           ',' + p2[0].toFixed(2) + ' ' + p2[1].toFixed(2);
+    }
+    return d + 'Z';
+  }
+  function ticks(cx, cy, r1, r2, count) {
+    let d = '';
+    for (let i = 0; i < count; i++) {
+      const a = (i / count) * Math.PI * 2 - Math.PI / 2;
+      d += 'M' + (cx + Math.cos(a) * r1).toFixed(2) + ' ' + (cy + Math.sin(a) * r1).toFixed(2) +
+           'L' + (cx + Math.cos(a) * r2).toFixed(2) + ' ' + (cy + Math.sin(a) * r2).toFixed(2);
+    }
+    return d;
+  }
+
+  const WAX = blob(50, 50, 38, 22, 0.09, 20260827);
+  const INNER = blob(50, 50, 29, 18, 0.05, 77);
+  const DRIP_A = blob(41, 89, 5.4, 12, 0.16, 5);
+  const DRIP_C = blob(46, 96, 2.7, 10, 0.25, 13);
+
+  document.getElementById('mark').innerHTML =
+    '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">' +
+      '<defs>' +
+        '<radialGradient id="wax" cx="34%" cy="28%" r="78%">' +
+          '<stop offset="0%" stop-color="#ec5b63"/>' +
+          '<stop offset="45%" stop-color="#c02a38"/>' +
+          '<stop offset="100%" stop-color="#6a1420"/>' +
+        '</radialGradient>' +
+        '<clipPath id="c"><path d="' + WAX + '"/></clipPath>' +
+      '</defs>' +
+      '<g fill="url(#wax)"><path d="' + DRIP_A + '"/><path d="' + DRIP_C + '"/></g>' +
+      '<path d="' + WAX + '" fill="url(#wax)"/>' +
+      '<g clip-path="url(#c)"><ellipse cx="34" cy="26" rx="27" ry="18" fill="#fff" opacity=".14"/></g>' +
+      '<path d="' + INNER + '" fill="none" stroke="#4c0d16" stroke-width="2.2" opacity=".5"/>' +
+      '<path d="' + ticks(50, 50, 24, 27.5, 28) + '" stroke="#4c0d16" stroke-width="1.4" opacity=".42" stroke-linecap="round"/>' +
+      '<g fill="#42090f" opacity=".92"><circle cx="50" cy="43" r="7.8"/>' +
+      '<path d="M46.2 48 L43.2 64 Q50 67 56.8 64 L53.8 48Z"/></g>' +
+      '<g fill="#ffd9a8" opacity=".16"><circle cx="50" cy="41.6" r="5.4"/></g>' +
+    '</svg>';
+</script>
+</body>
+</html>

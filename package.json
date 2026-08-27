@@ -11,7 +11,8 @@
     "icon": "node tools/make-icon.js",
     "ui": "node tools/dev-server.js",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder --win"
+    "dist": "electron-builder --win",
+    "banner": "electron tools/make-banner.js"
   },
   "devDependencies": {
     "electron": "32.3.3",
@@ -28,15 +29,30 @@
       "renderer/**/*",
       "package.json"
     ],
-    "directories": { "buildResources": "build", "output": "dist" },
+    "directories": {
+      "buildResources": "build",
+      "output": "dist"
+    },
     "win": {
       "icon": "build/icon.ico",
       "target": [
-        { "target": "portable", "arch": ["x64"] },
-        { "target": "nsis", "arch": ["x64"] }
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
       ]
     },
-    "portable": { "artifactName": "Waxseal-${version}-portable.exe" },
+    "portable": {
+      "artifactName": "Waxseal-${version}-portable.exe"
+    },
     "nsis": {
       "oneClick": false,
       "perMachine": false,
