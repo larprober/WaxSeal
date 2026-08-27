@@ -13,3 +13,6 @@ settings.json
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# editor / dev scaffolding
+.claude/
