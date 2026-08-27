@@ -1,0 +1,48 @@
+{
+  "name": "waxseal",
+  "version": "1.0.0",
+  "description": "Sealed .txt notes — anyone on this PC can read the name, only the password opens the letter, and every attempt is recorded inside the file.",
+  "license": "MIT",
+  "author": "larprober",
+  "main": "app/main.js",
+  "scripts": {
+    "start": "electron app/main.js",
+    "test": "node tools/test-core.js",
+    "icon": "node tools/make-icon.js",
+    "ui": "node tools/dev-server.js",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder --win"
+  },
+  "devDependencies": {
+    "electron": "32.3.3",
+    "electron-builder": "25.1.8"
+  },
+  "build": {
+    "appId": "com.larprober.waxseal",
+    "productName": "Waxseal",
+    "asar": true,
+    "files": [
+      "build/icon.ico",
+      "app/**/*",
+      "core/**/*",
+      "renderer/**/*",
+      "package.json"
+    ],
+    "directories": { "buildResources": "build", "output": "dist" },
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        { "target": "portable", "arch": ["x64"] },
+        { "target": "nsis", "arch": ["x64"] }
+      ]
+    },
+    "portable": { "artifactName": "Waxseal-${version}-portable.exe" },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "Waxseal",
+      "artifactName": "Waxseal-${version}-setup.exe"
+    }
+  }
+}

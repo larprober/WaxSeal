@@ -1,0 +1,15 @@
+# dependencies and build output — never in the repo
+node_modules/
+dist/
+
+# the built binaries belong in a GitHub Release, not in git
+*.exe
+
+# local scratch
+*.log
+settings.json
+
+# OS cruft
+.DS_Store
+Thumbs.db
+desktop.ini
